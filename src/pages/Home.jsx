@@ -1,27 +1,24 @@
 import React, { useState } from 'react';
 import MainPageLayout from '../components/MainPageLayout';
+import { apiGet } from '../misc/config';
 import ShowGrid from '../components/show/ShowGrid';
 import ActorGrid from '../components/actor/ActorGrid';
-import { apiGet } from '../misc/config';
+import { useLastQuery } from '../misc/custom-hooks';
 
 const Home = () => {
-  const [input, setInput] = useState('');
+  const [input, setInput] = useLastQuery();
   const [results, setResults] = useState(null);
-  const [searchOptions, setSearchOptions] = useState('shows');
+  const [searchOption, setSearchOption] = useState('shows');
 
-  const isSearchShows = searchOptions === 'shows';
+  const isShowsSearch = searchOption === 'shows';
+  const onSearch = () => {
+    apiGet(`/search/${searchOption}?q=${input}`).then(result => {
+      setResults(result);
+    });
+  };
 
   const onInputChange = ev => {
     setInput(ev.target.value);
-  };
-
-  const onSearch = () => {
-    // https://api.tvmaze.com/search
-    // API Key = OWBfv_pNu_VHBIJmJEW_UIpancErpu23
-
-    apiGet(`/search/${searchOptions}?q=${input}`).then(result => {
-      setResults(result);
-    });
   };
 
   const onKeyDown = ev => {
@@ -30,59 +27,55 @@ const Home = () => {
     }
   };
 
+  const onRadioChange = ev => {
+    setSearchOption(ev.target.value);
+  };
+
   const renderResults = () => {
     if (results && results.length === 0) {
       return <div>No results</div>;
     }
+
     if (results && results.length > 0) {
       return results[0].show ? (
         <ShowGrid data={results} />
       ) : (
         <ActorGrid data={results} />
       );
-
-      // return results[0].show
-      //   ? results.map(item => <div key={item.show.id}>{item.show.name}</div>)
-      //   : results.map(item => (
-      //       <div key={item.person.id}>{item.person.name}</div>
-      //     ));
     }
+
     return null;
   };
-
-  const onRadioChange = ev => {
-    setSearchOptions(ev.target.value);
-  };
-
-  console.log(searchOptions);
 
   return (
     <MainPageLayout>
       <input
         type="text"
+        placeholder="Search for something"
         onChange={onInputChange}
         onKeyDown={onKeyDown}
-        placeholder="Search for something . . . . ."
+        value={input}
       />
 
       <div>
         <label htmlFor="shows-search">
-          Shows{' '}
+          Shows
           <input
-            type="radio"
             id="shows-search"
+            type="radio"
             value="shows"
+            checked={isShowsSearch}
             onChange={onRadioChange}
-            checked={isSearchShows}
           />
         </label>
+
         <label htmlFor="actors-search">
-          Actors{' '}
+          Actors
           <input
-            type="radio"
             id="actors-search"
+            type="radio"
             value="people"
-            checked={!isSearchShows}
+            checked={!isShowsSearch}
             onChange={onRadioChange}
           />
         </label>

@@ -1,57 +1,16 @@
-import React, { useEffect, useReducer, useState } from 'react';
-import { useParams } from 'react-router';
-import Cast from '../components/show/Cast';
+/* eslint-disable no-underscore-dangle */
+import React from 'react';
+import { useParams } from 'react-router-dom';
+import ShowMainData from '../components/show/ShowMainData';
 import Details from '../components/show/Details';
 import Seasons from '../components/show/Seasons';
-import { InfoBlock, ShowPageWrapper } from '../components/show/Show.styled';
-import ShowMainData from '../components/show/ShowMainData';
-import { apiGet } from '../misc/config';
-
-const initialState = {
-  show: null,
-  isLoading: true,
-  error: null,
-};
-
-const reducer = (prevState, action) => {
-  switch (action.type) {
-    case 'FETCH_SUCCESS': {
-      return { isLoading: false, error: null, show: action.show };
-    }
-    case 'FETCH_FAILED': {
-      return { ...prevState, isLoading: false, error: action.error };
-    }
-    default:
-      return prevState;
-  }
-};
+import Cast from '../components/show/Cast';
+import { ShowPageWrapper, InfoBlock } from './Show.styled';
+import { useShow } from '../misc/custom-hooks';
 
 const Show = () => {
   const { id } = useParams();
-
-  const [{ show, isLoading, error }, dispatch] = useReducer(
-    reducer,
-    initialState
-  );
-
-  useEffect(() => {
-    let isMounted = true;
-    apiGet(`/shows/${id}?embed[]=seasons&embed[]=cast`)
-      .then(results => {
-        if (isMounted) {
-          dispatch({ type: 'FETCH_SUCCESS', show: results });
-        }
-      })
-      .catch(err => {
-        if (isMounted) {
-          dispatch({ type: 'FTECH_FAILED', error: err.message });
-        }
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [id]);
+  const { show, isLoading, error } = useShow(id);
 
   if (isLoading) {
     return <div>Data is being loaded</div>;
@@ -70,6 +29,7 @@ const Show = () => {
         summary={show.summary}
         tags={show.genres}
       />
+
       <InfoBlock>
         <h2>Details</h2>
         <Details
