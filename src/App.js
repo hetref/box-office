@@ -7,14 +7,11 @@ import Starred from './pages/Starred';
 
 function App() {
   return (
-    <div>
-      <Navs />
-      <Routes>
-        <Route path="/" exact element={<Home />} />
-        <Route path="/starred" exact element={<Starred />} />
-        <Route path="*" exact element={<NotFound />} />
-      </Routes>
-    </div>
+    <Routes>
+      <Route path="/" exact element={<Home />} />
+      <Route path="/starred" exact element={<Starred />} />
+      <Route path="*" exact element={<NotFound />} />
+    </Routes>
   );
 }
 
