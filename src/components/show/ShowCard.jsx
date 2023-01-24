@@ -1,12 +1,12 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Star } from '../styled';
-import { StyledShowCard } from './ShowCard.styled';
+import React, { memo } from "react";
+import { Link } from "react-router-dom";
+import { Star } from "../styled";
+import { StyledShowCard } from "./ShowCard.styled";
 
 const ShowCard = ({ id, image, name, summary, onStarClick, isStarred }) => {
   const summaryAsText = summary
-    ? `${summary.split(' ').slice(0, 10).join(' ').replace(/<.+?>/g, '')}...`
-    : 'No description';
+    ? `${summary.split(" ").slice(0, 10).join(" ").replace(/<.+?>/g, "")}...`
+    : "No description";
 
   return (
     <StyledShowCard>
@@ -28,4 +28,4 @@ const ShowCard = ({ id, image, name, summary, onStarClick, isStarred }) => {
   );
 };
 
-export default ShowCard;
+export default memo(ShowCard);
